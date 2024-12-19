@@ -5,6 +5,6 @@ RUN ./gradlew build -x test
 
 FROM openjdk:17 AS app
 WORKDIR /app
-COPY --from=builder /build/build/libs/demo-0.0.1-SNAPSHOT.jar /app
+COPY --from=builder /build/build/libs/demo.jar /app
 COPY opentelemetry-javaagent.jar opentelemetry-javaagent.jar
-CMD ["java", "-javaagent:opentelemetry-javaagent.jar", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-javaagent:opentelemetry-javaagent.jar", "-jar", "demo.jar"]
