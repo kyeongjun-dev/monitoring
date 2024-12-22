@@ -23,12 +23,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Docker 이미지 빌드
+      # Docker 이미지 빌드 및 푸시
       - name: Build Docker Image
         run: |
           docker buildx build --platform=linux/amd64,linux/arm64 -t kyeongjundev/springboot:${{ github.sha }} example/springboot --push
-
-      # Docker 이미지 푸시
-      - name: Push Docker Image
-        run: |
-          docker push kyeongjundev/springboot:${{ github.sha }}
