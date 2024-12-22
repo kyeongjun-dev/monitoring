@@ -35,3 +35,8 @@ kubectl -n default create -f fluentbit/rabc.yaml
 kubectl -n default create -f fluentbit/configmap.yaml
 kubectl -n default create -f fluentbit/daemonset.yaml
 ```
+
+### Dockerfile 빌드
+```
+docker build -t kyeongjundev/springboot:local example/springboot
+```

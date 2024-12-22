@@ -1,0 +1,10 @@
+helmDefaults:
+  kubeContext: docker-desktop
+  createNamespace: true
+
+releases:
+  - name: opentelemetry-collector
+    namespace: monitoring
+    chart: ./charts/opentelemetry-collector
+    values:
+      - ./values/opentelemetry-collector.yaml

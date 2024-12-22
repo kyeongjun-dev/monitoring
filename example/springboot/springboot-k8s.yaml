@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: springboot
-        image: springboot:test
+        image: kyeongjundev/springboot:local
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
@@ -38,9 +38,9 @@ spec:
         resources:
           requests:
             cpu: 50m
-            memory: 200Mi
+            memory: 400Mi
           limits:
-            memory: 200Mi
+            memory: 400Mi
 ---
 apiVersion: v1
 kind: Service
