@@ -3,6 +3,13 @@ helmDefaults:
   createNamespace: true
 
 releases:
+  - name: tempo
+    namespace: grafana
+    chart: ./charts/tempo
+    values:
+      - ./values/tempo.yaml
+
+
   - name: otel-collector
     namespace: monitoring
     chart: ./charts/opentelemetry-collector
