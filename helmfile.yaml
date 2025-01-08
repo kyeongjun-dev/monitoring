@@ -3,7 +3,7 @@ helmDefaults:
   createNamespace: true
 
 releases:
-  - name: opentelemetry-collector
+  - name: otel-collector
     namespace: monitoring
     chart: ./charts/opentelemetry-collector
     values:
