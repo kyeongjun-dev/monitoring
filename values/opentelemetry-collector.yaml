@@ -2,82 +2,71 @@ mode: "deployment"
 
 config:
   exporters:
-    otlp: # the OTLP receiver the app is sending traces to
+    otlp:
       endpoint: tempo.grafana.svc.cluster.local:4317
       tls:
         insecure: true
+    prometheusremotewrite:
+      endpoint: "http://kube-prometheus-stack-prometheus.prometheus.svc.cluster.local:9090/api/v1/write"
+      tls:
+        insecure: true
+      external_labels:
+        label_name: test
+      namespace: "my_app"
+    logging:
+      verbosity: detailed
+
   extensions:
     health_check:
       endpoint: ${env:MY_POD_IP}:13133
     memory_ballast: {}
+
   processors:
     batch: {}
     memory_limiter: null
-    # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/attributesprocessor/README.md
     attributes:
       actions:
-        # 불필요한 attirbute를 제거
-        - key: thread.name
-          action: delete
-        - key: thread.id
-          action: delete
-        # 필요한 attribute를 추가
+        # - key: thread.name
+        #   action: delete
+        # - key: thread.id
+        #   action: delete
         - key: app.name
           action: insert
           value: "springboot"
         - key: app.namespace
           action: insert
           value: "springboot"
-
-    # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourceprocessor/README.md
     resource:
       attributes:
-        # attribute 추가
         - key: cluster
           value: docker-desktop
           action: insert
-
-        # process 관련
-        - key: process.command_args
-          action: delete
-        - key: process.executable.path
-          action: delete
-        - key: process.pid
-          action: delete
-        - key: process.runtime.description
-          action: delete
-        - key: process.runtime.name
-          action: delete
-        - key: process.runtime.version
-          action: delete
-        - key: container.id	
-          action: delete
-        - key: host.arch
-          action: delete
-        - key: os.description	
-          action: delete
-        - key: os.type
-          action: delete
-        - key: os.version
-          action: delete
-        - key: os.type
-          action: delete
-        # service 관련
-        - key: service.instance.id	
-          action: delete
-        - key: service.version
-          action: delete
-        - key: telemetry.distro.name	
-          action: delete
-        - key: telemetry.distro.version	
-          action: delete
-        - key: telemetry.sdk.language	
-          action: delete
-        - key: telemetry.sdk.name	
-          action: delete
-        - key: telemetry.sdk.version	
-          action: delete
-
+        # - key: process.command_args
+        #   action: delete
+        # - key: process.executable.path
+        #   action: delete
+        # - key: process.pid
+        #   action: delete
+        # - key: process.runtime.description
+        #   action: delete
+        # - key: process.runtime.name
+        #   action: delete
+        # - key: process.runtime.version
+        #   action: delete
+        # - key: container.id	
+        #   action: delete
+        # - key: host.arch
+        #   action: delete
+        # - key: os.description	
+        #   action: delete
+        # - key: os.type
+        #   action: delete
+        # - key: service.instance.id	
+        #   action: delete
+        # - key: service.version
+        #   action: delete
+        # - key: telemetry.sdk.language	
+        #   action: delete
 
   receivers:
     otlp:
@@ -86,11 +75,44 @@ config:
           endpoint: ${env:MY_POD_IP}:4317
         http:
           endpoint: ${env:MY_POD_IP}:4318
+
+  connectors:
+    spanmetrics:
+      histogram:
+        explicit:
+          buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
+      dimensions:
+        - name: http.method
+          default: GET
+        - name: http.status_code
+        - name: host.name
+      exemplars:
+        enabled: true
+      dimensions_cache_size: 1000
+      aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
+      metrics_flush_interval: 15s
+      metrics_expiration: 5m
+      events:
+        enabled: true
+        dimensions:
+          - name: exception.type
+          - name: exception.message
+      resource_metrics_key_attributes:
+        - service.name
+        - telemetry.sdk.language
+        - telemetry.sdk.name
+
   service:
     extensions:
       - health_check
       - memory_ballast
     pipelines:
+      traces/in:
+        receivers: [otlp]
+        exporters: [logging, spanmetrics]
+      metrics/out:
+        receivers: [spanmetrics]
+        exporters: [logging, prometheusremotewrite]
       traces:
         exporters:
           - otlp

@@ -8,3 +8,15 @@ releases:
     chart: ./charts/opentelemetry-collector
     values:
       - ./values/opentelemetry-collector.yaml
+
+  - name: kube-prometheus-stack
+    namespace: prometheus
+    chart: ./charts/kube-prometheus-stack
+    values:
+      - ./values/kube-prometheus-stack.yaml
+
+  - name: grafana
+    namespace: grafana
+    chart: ./charts/grafana
+    values:
+      - ./values/grafana.yaml

@@ -1,0 +1,66 @@
+crds:
+  enabled: true
+
+defaultRules:
+  create: false
+
+global:
+  rbac:
+    create: true
+
+windowsMonitoring:
+  enabled: false
+
+prometheus-windows-exporter:
+  prometheus:
+    monitor:
+      enabled: false
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: false
+
+kubernetesServiceMonitors:
+  enabled: false
+
+kubeApiServer:
+  enabled: false
+
+kubelet:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+coreDns:
+  enabled: false
+
+kubeDns:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+kubeStateMetrics:
+  enabled: false
+
+nodeExporter:
+  enabled: false
+
+prometheusOperator:
+  enabled: true
+
+prometheus:
+  enabled: true
+  agentMode: false
+  prometheusSpec:
+    externalLabels: {}
+    enableRemoteWriteReceiver: true
