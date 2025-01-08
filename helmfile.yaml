@@ -20,3 +20,9 @@ releases:
     chart: ./charts/grafana
     values:
       - ./values/grafana.yaml
+  
+  - name: alloy
+    namespace: alloy
+    chart: ./charts/alloy
+    values:
+      - ./values/alloy.yaml
