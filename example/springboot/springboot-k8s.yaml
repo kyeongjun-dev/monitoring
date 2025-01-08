@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: springboot
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -49,8 +49,10 @@ metadata:
   labels:
     app: springboot
 spec:
+  type: NodePort
   ports:
-  - port: 8080
-    protocol: TCP
+  - targetPort: 8080
+    nodePort: 30008
+    port: 80
   selector:
     app: springboot
