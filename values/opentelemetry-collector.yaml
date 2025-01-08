@@ -12,7 +12,8 @@ config:
         insecure: true
       external_labels:
         label_name: test
-      namespace: "my_app"
+      # namespace를 설정하면 metric에 접두어가 붙음 : calls_total -> my_app_calls_total
+      # namespace: "my_app"
     logging:
       verbosity: detailed
 
@@ -36,6 +37,17 @@ config:
         - key: app.namespace
           action: insert
           value: "springboot"
+        # - key: http.method
+        #   from_attribute: http.request.method
+        #   action: upsert
+        # - key: http.status_code
+        #   from_attribute: http.response.status_code
+        #   action: upsert
+        # # 기존 key는 제거
+        # - key: http.response.status_code
+        #   action: delete
+        # - key: http.request.method
+        #   action: delete
     resource:
       attributes:
         - key: cluster
@@ -82,9 +94,9 @@ config:
         explicit:
           buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
       dimensions:
-        - name: http.method
+        - name: http.request.method
           default: GET
-        - name: http.status_code
+        - name: http.response.status_code
         - name: host.name
       exemplars:
         enabled: true
