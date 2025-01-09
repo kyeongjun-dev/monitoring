@@ -3,6 +3,9 @@ package com.example.demo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -10,8 +13,11 @@ import java.util.Enumeration;
 @RestController
 public class HelloWorldController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HelloWorldController.class);
+
     @GetMapping("")
     public String helloWorld() {
+        logger.info("home() has been called");
         return "Hello, world";
     }
 
