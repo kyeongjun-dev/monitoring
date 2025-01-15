@@ -14,23 +14,29 @@ data:
         Name              tail
         Tag               springboot
         Path              /var/log/containers/springboot*.log
-        Parser            docker
+        Parser            json
         DB                /var/log/flb_kube.db
         Mem_Buf_Limit     5MB
         Skip_Long_Lines   On
         Refresh_Interval  10
 
-    [FILTER]
-        Name         modify
-        Match        kube.var.log.containers.springboot*
-        Add service  springboot
+    # [FILTER]
+    #     Name         modify
+    #     Match        kube.var.log.containers.springboot*
+    #     Add service  springboot
 
     [FILTER]
-        Name         parser
-        Parser       docker
-        Match        kube.var.log.containers.springboot*
-        Key_Name     log
-        Reserve_Data On
+        Name        modify
+        Match       kube.var.log.containers.springboot*
+        Remove stream,time
+        Rename  log message
+
+    # [FILTER]
+    #     Name         parser
+    #     Parser       docker
+    #     Match        kube.var.log.containers.springboot*
+    #     Key_Name     log
+    #     Reserve_Data On
 
     [OUTPUT]
         Name        loki
@@ -57,7 +63,7 @@ data:
         Format            json
         Time_Key          time
         Time_Format       %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep         On
+        Time_Keep         Off
         # Command       | Decoder   | Field | Optional Action   |
         # ==============|===========|=======|===================|
         Decode_Field_As   escaped_utf8    log    do_next
