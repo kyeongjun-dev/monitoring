@@ -46,8 +46,19 @@ tempo:
   reportingEnabled: true
   metricsGenerator:
     # -- If true, enables Tempo's metrics generator (https://grafana.com/docs/tempo/next/metrics-generator/)
-    enabled: false
-    remoteWriteUrl: "http://prometheus.monitoring:9090/api/v1/write"
+    enabled: true
+    remoteWriteUrl: "http://kube-prometheus-stack-prometheus.prometheus.svc.cluster.local:9090/api/v1/write"
+    # generate_native_histograms: native
+    # remoteWriteUrl: "http://kube-prometheus-stack-prometheus.prometheus.svc.cluster.local:9090/api/v1/write"
+    processor:
+      service_graphs:
+        histogram_buckets: [0.1, 0.2, 0.5, 1, 2, 5, 10]
+      span_metrics:
+        dimensions:
+          - http.method
+          - http.target
+          - http.response.status_code
+
   # -- Configuration options for the ingester
   ingester: {}
   # -- Configuration options for the querier
@@ -58,13 +69,18 @@ tempo:
   # Global overrides
   global_overrides:
     per_tenant_override_config: /conf/overrides.yaml
-  overrides: {}
+  overrides:
+    defaults:
+      metrics_generator:
+        generate_native_histograms: both
+
 
   # Tempo server configuration
   # Refers to https://grafana.com/docs/tempo/latest/configuration/#server
   server:
     # -- HTTP server listen port
     http_listen_port: 3100
+    log_level: debug
   storage:
     trace:
       # tempo storage backend

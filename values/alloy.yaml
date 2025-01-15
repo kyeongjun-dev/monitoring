@@ -1,0 +1,54 @@
+alloy:
+  enableReporting: false
+  configMap:
+    # -- Create a new ConfigMap for the config file.
+    create: true
+    # -- Content to assign to the new ConfigMap.  This is passed into `tpl` allowing for templating from values.
+    content: |-
+      logging {
+        level = "debug"
+        format = "logfmt"
+      }
+
+      // https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.receiver.otlp/#grpc-block
+      otelcol.receiver.otlp "default" {
+        // default value is 0.0.0.0:4317
+        grpc {}
+
+        // default value is 0.0.0.0:4318
+        http {}
+
+        output {
+          traces  = [otelcol.processor.batch.default.input]
+        }
+      }
+
+      otelcol.processor.batch "default" {
+        output {
+          traces  = [otelcol.exporter.otlp.tempo.input]
+        }
+      }
+
+      otelcol.exporter.otlp "tempo" {
+        client {
+          endpoint = "tempo.grafana.svc.cluster.local:4317"
+          tls {
+            insecure = true
+            insecure_skip_verify = true
+          }
+        }
+      }
+
+  extraPorts:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+
+controller:
+  type: 'deployment'
+  replicas: 1

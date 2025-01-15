@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot
+spec:
+  selector:
+    matchLabels:
+      app: springboot
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot
+    spec:
+      containers:
+      - name: springboot
+        image: kyeongjundev/springboot:bb0bdbfdc98f9678b05155c7d8d2d1f834ef7582
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+          value: "grpc"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
+        - name: OTEL_LOGS_EXPORTER
+          value: "none"
+        - name: OTEL_METRICS_EXPORTER
+          value: "none"
+        - name: OTEL_SERVICE_NAME
+          value: "demo"
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "true"
+        - name: OTEL_INSTRUMENTATION_COMMON_DB_STATEMENT_SANITIZER_ENABLED
+          value: "false"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 400Mi
+          limits:
+            memory: 400Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot
+  labels:
+    app: springboot
+spec:
+  type: NodePort
+  ports:
+  - targetPort: 8080
+    nodePort: 30008
+    port: 80
+  selector:
+    app: springboot

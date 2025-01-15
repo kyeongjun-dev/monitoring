@@ -14,15 +14,15 @@ spec:
     spec:
       containers:
       - name: springboot
-        image: kyeongjundev/springboot:local
-        imagePullPolicy: Never
+        image: kyeongjundev/springboot:bb0bdbfdc98f9678b05155c7d8d2d1f834ef7582
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
         - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
           value: "grpc"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
+          value: "http://alloy.alloy.svc.cluster.local:4317"
         - name: OTEL_LOGS_EXPORTER
           value: "none"
         - name: OTEL_METRICS_EXPORTER

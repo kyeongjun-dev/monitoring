@@ -40,3 +40,34 @@ kubectl -n default create -f fluentbit/daemonset.yaml
 ```
 docker build -t kyeongjundev/springboot:local example/springboot
 ```
+---
+# 테스트 환경 세팅
+### grafana stack 배포
+tempo, grafana 배포
+```
+helmfile sync --selector name=tempo
+helmfile sync --selector name=grafana
+```
+
+alloy 배포
+```
+helmfile sync --selector name=alloy
+```
+
+### prometheus 배포
+kube prometheus stack 배포
+```
+helmfile sync --selector name=kube-prometheus-stack
+```
+
+
+### springboot 배포
+namespace 생성
+```
+kubectl create ns springboot
+```
+
+`example/springboot/springboot-k8s-alloy.yaml` 또는 `example/springboot/springboot-k8s-otel.yaml` 설치
+```
+kubectl apply -f example/springboot/springboot-k8s-alloy.yaml -n springboot
+```

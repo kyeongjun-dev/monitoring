@@ -64,3 +64,5 @@ prometheus:
   prometheusSpec:
     externalLabels: {}
     enableRemoteWriteReceiver: true
+    enableFeatures:
+    - native-histograms

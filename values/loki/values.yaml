@@ -676,7 +676,7 @@ monitoring:
     # PodLogs configuration
     podLogs:
       # -- PodLogs version
-      apiVersion: monitoring.grafana.com/v1alpha1
+      apiVersion: monitoring.grafana.com/v1alpha2
       # -- PodLogs annotations
       annotations: {}
       # -- Additional PodLogs labels
