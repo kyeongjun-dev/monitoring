@@ -57,6 +57,7 @@ tempo:
         dimensions:
           - http.method
           - http.target
+          - http.response.status_code
 
   # -- Configuration options for the ingester
   ingester: {}
