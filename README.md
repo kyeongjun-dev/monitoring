@@ -49,9 +49,10 @@ helmfile sync --selector name=tempo
 helmfile sync --selector name=grafana
 ```
 
-alloy 배포
+alloy or otel collector 배포
 ```
 helmfile sync --selector name=alloy
+helmfile sync --selector name=opentelemetry-collector
 ```
 
 ### prometheus 배포
@@ -70,4 +71,24 @@ kubectl create ns springboot
 `example/springboot/springboot-k8s-alloy.yaml` 또는 `example/springboot/springboot-k8s-otel.yaml` 설치
 ```
 kubectl apply -f example/springboot/springboot-k8s-alloy.yaml -n springboot
+kubectl apply -f example/springboot/springboot-k8s-otel.yaml -n springboot
+```
+---
+## Springboot 설정
+endpoint 리스트
+```
+helloworld 출력
+/
+
+ip주소 출력
+/ip
+
+error 반환
+/error401
+/error402
+/error403
+/error404
+
+입력한 초 n 만큰 sleep 후 응답
+/delay?delay=3
 ```
