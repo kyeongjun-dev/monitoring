@@ -94,7 +94,7 @@ error 반환
 ```
 ---
 # Native Histogram - go client 예시
-## play-with-prometheus-native
+## play-with-prometheus-native - (깃링크)[https://github.com/grafanafans/play-with-prometheus-native.git]
 아래 명령어로 컨테이너를 실행
 ```
 cd example/play-with-prometheus-native
