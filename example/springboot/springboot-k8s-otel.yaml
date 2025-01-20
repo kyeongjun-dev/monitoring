@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: springboot
-        image: kyeongjundev/springboot:bb0bdbfdc98f9678b05155c7d8d2d1f834ef7582
+        image: kyeongjundev/springboot:39e2e243b5ddd14f47c35a91f00c068aef13b6ab
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
