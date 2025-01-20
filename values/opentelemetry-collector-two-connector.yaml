@@ -90,6 +90,26 @@ config:
           endpoint: ${env:MY_POD_IP}:4318
 
   connectors:
+    spanmetrics/explicit:
+      histogram:
+        explicit:
+          buckets: [500ms, 4s]
+      dimensions:
+        - name: http.request.method
+          default: GET
+        - name: http.response.status_code
+      exemplars:
+        enabled: false
+      dimensions_cache_size: 1000
+      aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
+      metrics_flush_interval: 15s
+      metrics_expiration: 5m
+      events:
+        enabled: false
+        dimensions:
+          - name: exception.type
+      resource_metrics_key_attributes:
+        - service.name
     spanmetrics/exponential:
       histogram:
         exponential:
@@ -127,9 +147,11 @@ config:
           - resource
         exporters:
           - otlp
+          - spanmetrics/explicit
           - spanmetrics/exponential
       metrics:
         receivers:
+          - spanmetrics/explicit
           - spanmetrics/exponential
         exporters:
           - prometheusremotewrite
