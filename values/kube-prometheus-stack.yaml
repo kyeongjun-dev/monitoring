@@ -60,6 +60,11 @@ prometheusOperator:
 
 prometheus:
   enabled: true
+  service:
+    type: NodePort
+    nodePort: 30090
+    targetPort: 9090
+    port: 9090
   agentMode: false
   prometheusSpec:
     externalLabels: {}

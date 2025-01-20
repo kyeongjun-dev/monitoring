@@ -10,7 +10,7 @@ releases:
       - ./values/tempo.yaml
 
 
-  - name: otel-collector
+  - name: opentelemetry-collector
     namespace: monitoring
     chart: ./charts/opentelemetry-collector
     values:
