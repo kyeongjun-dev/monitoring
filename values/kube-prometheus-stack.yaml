@@ -71,3 +71,9 @@ prometheus:
     enableRemoteWriteReceiver: true
     enableFeatures:
     - native-histograms
+    additionalScrapeConfigs:
+    - job_name: go-client
+      scrape_interval: 10s
+      static_configs:
+      - targets: ["go.go.svc.cluster.local:8080"]
+
