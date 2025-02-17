@@ -1,0 +1,46 @@
+mode: "deployment"
+
+config:
+  exporters:
+    otlp:
+      endpoint: tempo.grafana.svc.cluster.local:4317
+      tls:
+        insecure: true
+    logging:
+      verbosity: detailed
+
+  extensions:
+    health_check:
+      endpoint: ${env:MY_POD_IP}:13133
+    memory_ballast: {}
+
+  processors:
+    batch: {}
+    memory_limiter: null
+
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: ${env:MY_POD_IP}:4317
+        http:
+          endpoint: ${env:MY_POD_IP}:4318
+
+  service:
+    extensions:
+      - health_check
+      - memory_ballast
+    pipelines:
+      traces:
+        exporters:
+          - otlp
+        processors:
+          - memory_limiter
+          - batch
+        receivers:
+          - otlp
+
+image:
+  repository: "otel/opentelemetry-collector-contrib"
+  pullPolicy: IfNotPresent
+  tag: "0.101.0"

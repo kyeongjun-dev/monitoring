@@ -33,3 +33,9 @@ releases:
     chart: ./charts/alloy
     values:
       - ./values/alloy.yaml
+
+  - name: mimir
+    namespace: mimir
+    chart: ./charts/mimir-distributed
+    values:
+      - ./values/mimir.yaml

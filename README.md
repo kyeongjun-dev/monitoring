@@ -92,3 +92,49 @@ error 반환
 입력한 초 n 만큰 sleep 후 응답
 /delay?delay=3
 ```
+---
+# Native Histogram - go client 예시
+## play-with-prometheus-native - (깃링크)[https://github.com/grafanafans/play-with-prometheus-native.git]
+아래 명령어로 컨테이너를 실행
+```
+cd example/play-with-prometheus-native
+docker-compose up -d
+```
+
+`native-histogram` feature가 활성화된 9090 포트와 9091 포트의 프로메테우스에 접속해서 각각 `http_request_durations`를 검색하여 차이 확인
+```
+// 9090
+http_request_durations (histogram)
+
+// 9090
+http_request_durations_sum (counter)
+http_request_durations_count (counter)
+http_request_durations_bucket (counter)
+```
+
+## prometheus_native_histogram_go_client_on_k8s
+아래 경로로 이동 및 도커 빌드
+```
+cd example/prometheus_native_histogram_go_client_on_k8s
+docker build -t go:local .
+```
+
+`example/prometheus_native_histogram_go_client_on_k8s/go.yaml` 파일 배포
+```
+kubectl create ns go
+kubectl apply -f example/prometheus_native_histogram_go_client_on_k8s/go.yaml -n go
+```
+
+`values/kube-prometheuss-tack.yaml` 파일 최하단의 아래 부분에서 scrap
+```
+    additionalScrapeConfigs:
+    - job_name: go-client
+      scrape_interval: 10s
+      static_configs:
+      - targets: ["go.go.svc.cluster.local:8080"]
+```
+
+프로메테우스에서 request_latency_seconds 검색
+```
+request_latency_seconds (histogram)
+```

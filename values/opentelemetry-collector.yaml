@@ -11,9 +11,7 @@ config:
       tls:
         insecure: true
       external_labels:
-        label_name: test
-      # namespace를 설정하면 metric에 접두어가 붙음 : calls_total -> my_app_calls_total
-      # namespace: "my_app"
+        cluster: docker-desktop
     logging:
       verbosity: detailed
 
@@ -25,60 +23,63 @@ config:
   processors:
     batch: {}
     memory_limiter: null
+    # service attribute 제거
     attributes:
       actions:
-        # - key: thread.name
-        #   action: delete
-        # - key: thread.id
-        #   action: delete
-        - key: app.name
-          action: insert
-          value: "springboot"
-        - key: app.namespace
-          action: insert
-          value: "springboot"
-        # - key: http.method
-        #   from_attribute: http.request.method
-        #   action: upsert
-        # - key: http.status_code
-        #   from_attribute: http.response.status_code
-        #   action: upsert
-        # # 기존 key는 제거
-        # - key: http.response.status_code
-        #   action: delete
-        # - key: http.request.method
-        #   action: delete
+        - key: client.address
+          action: delete
+        - key: network.peer.address
+          action: delete
+        - key: network.peer.port
+          action: delete
+        - key: network.protocol.version
+          action: delete
+        - key: thread.id
+          action: delete
+        - key: thread.name
+          action: delete
+        - key: user_agent.original
+          action: delete
+    # resource attribute 제거
     resource:
       attributes:
         - key: cluster
           value: docker-desktop
           action: insert
-        # - key: process.command_args
-        #   action: delete
-        # - key: process.executable.path
-        #   action: delete
-        # - key: process.pid
-        #   action: delete
-        # - key: process.runtime.description
-        #   action: delete
-        # - key: process.runtime.name
-        #   action: delete
-        # - key: process.runtime.version
-        #   action: delete
-        # - key: container.id	
-        #   action: delete
-        # - key: host.arch
-        #   action: delete
-        # - key: os.description	
-        #   action: delete
-        # - key: os.type
-        #   action: delete
-        # - key: service.instance.id	
-        #   action: delete
-        # - key: service.version
-        #   action: delete
-        # - key: telemetry.sdk.language	
-        #   action: delete
+        - key: container.id
+          action: delete
+        - key: host.arch
+          action: delete
+        - key: os.description
+          action: delete
+        - key: os.type
+          action: delete
+        - key: process.command_args
+          action: delete
+        - key: process.executable.path
+          action: delete
+        - key: process.pid
+          action: delete
+        - key: process.runtime.description
+          action: delete
+        - key: process.runtime.name
+          action: delete
+        - key: process.runtime.version
+          action: delete
+        - key: service.instance.id
+          action: delete
+        - key: service.version
+          action: delete
+        - key: telemetry.distro.name
+          action: delete
+        - key: telemetry.distro.version
+          action: delete
+        - key: telemetry.sdk.language
+          action: delete
+        - key: telemetry.sdk.name
+          action: delete
+        - key: telemetry.sdk.version
+          action: delete
 
   receivers:
     otlp:
@@ -89,52 +90,50 @@ config:
           endpoint: ${env:MY_POD_IP}:4318
 
   connectors:
-    spanmetrics:
+    spanmetrics/exponential:
       histogram:
-        explicit:
-          buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
+        exponential:
+          max_size: 160
       dimensions:
         - name: http.request.method
           default: GET
         - name: http.response.status_code
-        - name: host.name
       exemplars:
-        enabled: true
+        enabled: false
       dimensions_cache_size: 1000
       aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
       metrics_flush_interval: 15s
       metrics_expiration: 5m
       events:
-        enabled: true
+        enabled: false
         dimensions:
           - name: exception.type
-          - name: exception.message
       resource_metrics_key_attributes:
         - service.name
-        - telemetry.sdk.language
-        - telemetry.sdk.name
+
 
   service:
     extensions:
       - health_check
       - memory_ballast
     pipelines:
-      traces/in:
-        receivers: [otlp]
-        exporters: [logging, spanmetrics]
-      metrics/out:
-        receivers: [spanmetrics]
-        exporters: [logging, prometheusremotewrite]
       traces:
-        exporters:
+        receivers:
           - otlp
         processors:
           - memory_limiter
           - batch
           - attributes
           - resource
-        receivers:
+        exporters:
           - otlp
+          - spanmetrics/exponential
+      metrics:
+        receivers:
+          - spanmetrics/exponential
+        exporters:
+          - prometheusremotewrite
+        
 
 image:
   repository: "otel/opentelemetry-collector-contrib"
