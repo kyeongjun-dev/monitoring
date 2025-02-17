@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+    spec:
+      containers:
+        - name: tempo
+          image: grafana/tempo:2.7.1
+          #image: python:3.11-slim
+          command:
+          - "/tempo"
+          - "-config.file=/etc/tempo.yaml"
+          ports:
+            - containerPort: 3100
+            - containerPort: 4317
+          volumeMounts:
+            - name: config
+              mountPath: /etc/tempo.yaml
+              subPath: tempo.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: tempo
