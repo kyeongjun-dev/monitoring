@@ -67,13 +67,21 @@ prometheus:
     port: 9090
   agentMode: false
   prometheusSpec:
+    image:
+      registry: quay.io
+      repository: prometheus/prometheus
+      tag: v3.1.0
     externalLabels: {}
     enableRemoteWriteReceiver: true
     enableFeatures:
     - native-histograms
+    # - exemplar-storage
     additionalScrapeConfigs:
     - job_name: go-client
-      scrape_interval: 10s
+      scrape_interval: 15s
       static_configs:
       - targets: ["go.go.svc.cluster.local:8080"]
-
+    - job_name: tempo
+      scrape_interval: 15s
+      static_configs:
+      - targets: ["tempo.grafana.svc.cluster.local:3100"]
