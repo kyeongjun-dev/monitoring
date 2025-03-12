@@ -7,7 +7,7 @@ ARCH=$(uname -m)
 # 아키텍처 변환
 if [ "$ARCH" == "x86_64" ]; then
     ARCH="amd64"
-elif [ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]; then
+elif [ "$ARCH" == "arm64" ] || [ "$ARCH" == "aarch64" ]; then
     ARCH="arm64"
 else
     echo "지원되지 않는 아키텍처: $ARCH"
