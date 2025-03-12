@@ -8,3 +8,8 @@
 ```
 ./tempo-cli -h
 ```
+
+도커허브 이미지
+```
+kyeongjundev/busybox-tempo-cli:amd64
+```
