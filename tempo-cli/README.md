@@ -11,5 +11,11 @@
 
 도커허브 이미지
 ```
-kyeongjundev/busybox-tempo-cli:amd64
+kyeongjundev/busybox-tempo-cli:latest
+```
+
+빌드명령어 기록
+```
+docker buildx create --use
+docker buildx build -t kyeongjundev/busybox-tempo-cli:latest --platform linux/amd64,linux/arm64 . --push
 ```
