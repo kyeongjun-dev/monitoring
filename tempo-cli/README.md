@@ -9,6 +9,14 @@
 ./tempo-cli -h
 ```
 
+## 도커 컨테이너에서 사용
+다음 단계의 이미지를 실행시킨 후, 컨테이너 접속시 `tempo-cli` 바이너리 파일이 `/app` 경로에 존재
+```
+docker exec -it 0962fb2ca9a0 bash
+root@0962fb2ca9a0:/app# ./tempo-cli -h
+```
+
+
 도커허브 이미지
 ```
 kyeongjundev/ubuntu-tempo-cli:latest
