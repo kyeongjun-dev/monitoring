@@ -1,0 +1,42 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  # Tail Sampling : TraceID 단위로 전체 Span이 수집된 뒤 샘플링 결정
+  tail_sampling:
+    # 샘플링 결정 전 Span을 대기하는 시간 (Trace가 완전히 수집될 때까지 기다림)
+    decision_wait: 10s
+    num_traces: 1000
+    expected_new_traces_per_sec: 10
+    policies:
+      # 에러가 포함된 Trace는 항상 수집
+      - name: errors-policy
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+      # 1초(1000ms) 이상 걸린 느린 Trace는 항상 수집
+      - name: slow-traces-policy
+        type: latency
+        latency:
+          threshold_ms: 1000
+      # 나머지는 10% 확률로 샘플링
+      - name: probabilistic-policy
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 10
+
+exporters:
+  otlp:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [tail_sampling]
+      exporters: [otlp]

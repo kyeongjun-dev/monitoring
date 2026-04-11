@@ -1,0 +1,37 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+# spanmetrics connector : traces pipeline의 exporter이자 metrics pipeline의 receiver 역할
+connectors:
+  spanmetrics:
+    histogram:
+      explicit:
+        buckets: [2ms, 4ms, 6ms, 8ms, 10ms, 50ms, 100ms, 200ms, 400ms, 800ms, 1s, 1400ms, 2s, 5s, 10s, 15s]
+    dimensions:
+      - name: http.method
+      - name: http.status_code
+      - name: http.route
+    exemplars:
+      enabled: true
+    metrics_flush_interval: 15s
+    namespace: tracesssss
+
+exporters:
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    # Span을 수신하여 spanmetrics connector로 전달
+    traces:
+      receivers: [otlp]
+      exporters: [spanmetrics]
+    # spanmetrics connector가 생성한 메트릭을 Prometheus로 전송
+    metrics:
+      receivers: [spanmetrics]
+      exporters: [prometheusremotewrite]
